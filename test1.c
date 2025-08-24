@@ -9,7 +9,7 @@ int	parse_arguments(t_data *a, int argc, char **argv)
 {
 	int option;
 	
-	while ((option = getopt(argc, argv, "v") != -1))
+	while ((option = getopt(argc, argv, "v")) != -1)
 	{
 		switch (option)
 		{
@@ -17,7 +17,6 @@ int	parse_arguments(t_data *a, int argc, char **argv)
 				a->verbose = 1;
 				break;
 			default:
-				//fprintf(stderr, "%s: invalid option -- '%c'\n", argv[1], option);
 				return (1);
 				
 		}
@@ -28,6 +27,7 @@ int	parse_arguments(t_data *a, int argc, char **argv)
 		return (1);
 	}
 	a->hostname = argv[optind];
+	printf("a->hostname: %s\n", a->hostname);
 	return (0);
 }
 
