@@ -9,5 +9,11 @@
 # include <stdio.h>
 # include <arpa/inet.h>
 
+typedef struct s_data	
+{
+	int 	verbose;
+	char	*hostname;
+}			t_data;
+
 
 #endif
