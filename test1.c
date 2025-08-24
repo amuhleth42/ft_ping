@@ -2,9 +2,10 @@
 
 int	main(int argc, char **argv)
 {
-	if (argc < 1)
+	(void)argv;
+	if (argc < 2)
 	{
-		printf("ft_ping: usage error: Destination address required");
+		printf("ft_ping: usage error: Destination address required\n");
 		return (1);
 	}
 }
