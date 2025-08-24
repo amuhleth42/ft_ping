@@ -11,8 +11,10 @@
 
 typedef struct s_data	
 {
-	int 	verbose;
-	char	*hostname;
+	int 			verbose;
+	char			*hostname;
+	struct addrinfo	hints;
+	struct addrinfo	*res;
 }			t_data;
 
 
