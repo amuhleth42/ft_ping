@@ -45,7 +45,7 @@ void	print_addrinfo(struct addrinfo *res)
 	}
 }
 
-int	send_ping(t_data *a)
+int	handle_getaddrinfo(t_data *a)
 {
 	int status;
 
@@ -61,6 +61,30 @@ int	send_ping(t_data *a)
 
 	print_addrinfo(a->res);
 
+	return (0);
+}
+
+int	open_socket(t_data *a)
+{
+	a->sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+	if (a->sockfd < 0)
+	{
+		perror("socket");
+		return (1);
+	}
+	return (0);
+}
+
+int	send_ping(t_data *a)
+{
+	int	status;
+
+	status = handle_getaddrinfo(a);
+	if (status != 0)
+		return (1);
+	status = open_socket(a);
+	if (status != 0)
+		return (1);
 	return (0);
 }
 

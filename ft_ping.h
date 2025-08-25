@@ -15,6 +15,7 @@ typedef struct s_data
 	char			*hostname;
 	struct addrinfo	hints;
 	struct addrinfo	*res;
+	int				sockfd;
 }			t_data;
 
 
