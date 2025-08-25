@@ -1,69 +1,5 @@
 #include "ft_ping.h"
 
-void	usage(char **argv)
-{
-	fprintf(stderr, "%s: usage error: Destination address required\n", argv[0]);
-}
-
-int	parse_arguments(t_data *a, int argc, char **argv)
-{
-	int option;
-	
-	while ((option = getopt(argc, argv, "v")) != -1)
-	{
-		switch (option)
-		{
-			case 'v':
-				a->verbose = 1;
-				break;
-			default:
-				return (1);
-				
-		}
-	}
-	if (optind >= argc)
-	{
-		fprintf(stderr, "%s: usage error: Destination address required\n", argv[0]);
-		return (1);
-	}
-	a->hostname = argv[optind];
-	printf("a->hostname: %s\n", a->hostname);
-	return (0);
-}
-
-void	print_addrinfo(struct addrinfo *res)
-{
-	while (res)
-	{
-		printf("ai_flags: %d\n", res->ai_flags);
-		printf("ai_family: %d\n", res->ai_family);
-		printf("ai_socktype: %d\n", res->ai_socktype);
-		printf("ai_protocol: %d\n", res->ai_protocol);
-		printf("ai_addrlen: %d\n", (int)res->ai_addrlen);
-		printf("ai_canonname: %s\n\n", res->ai_canonname);
-		res = res->ai_next;
-	}
-}
-
-int	handle_getaddrinfo(t_data *a)
-{
-	int status;
-
-	a->hints.ai_family = AF_INET;
-	a->hints.ai_socktype= SOCK_RAW;
-	a->hints.ai_protocol= IPPROTO_ICMP;
-	status = getaddrinfo(a->hostname, NULL, &a->hints, &a->res);
-	if (status != 0)
-	{
-		fprintf(stderr, "ft_ping: %s\n", gai_strerror(status));
-		return (1);
-	}
-
-	print_addrinfo(a->res);
-
-	return (0);
-}
-
 int	open_socket(t_data *a)
 {
 	a->sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
@@ -73,6 +9,44 @@ int	open_socket(t_data *a)
 		return (1);
 	}
 	return (0);
+}
+
+void	build_icmp_packet(t_data *a, int seq)
+{
+	a->packet_header.type = 8;
+	a->packet_header.code = 0;
+	a->packet_header.checksum = 0;
+	a->packet_header.id = (uint16_t) getpid();
+	a->packet_header.seq_num = (uint16_t) seq;
+
+	a->packetsize = sizeof(t_icmp) + a->payloadsize;
+	a->packet = malloc(a->packetsize);
+	if (!a->packet)
+	{
+		printf("malloc fail\n");
+		exit(1); //todo clean exit
+	}
+	memcpy(a->packet, &a->packet_header, sizeof(t_icmp));
+	
+}
+
+int	send_requests(t_data *a)
+{
+	printf("yoe\n");
+	int		seq;
+
+	seq = 1;
+	while (1)
+	{
+		build_icmp_packet(a, seq);
+		sendto(a->sockfd, a->packet, a->packetsize, 0, a->res->ai_addr, a->res->ai_addrlen);
+		printf("sendto\n");
+		a->sender_addrlen = sizeof(a->sender);
+		//recvfrom(a->sockfd, a->buf, sizeof(a->buf), 0, &a->sender, &a->sender_addrlen);
+		printf("recvfrom\n");
+		sleep(1);
+		seq++;
+	}
 }
 
 int	send_ping(t_data *a)
@@ -85,7 +59,10 @@ int	send_ping(t_data *a)
 	status = open_socket(a);
 	if (status != 0)
 		return (1);
-	return (0);
+	status = send_requests(a);
+	if (status != 0)
+		return (1);
+	return (send_requests(a));
 }
 
 int	main(int argc, char **argv)

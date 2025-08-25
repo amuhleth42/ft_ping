@@ -4,7 +4,9 @@ NAME	= ft_ping
 CC	= gcc
 CFLAGS	= -Wall -Wextra -Werror
 
-SRCS	= test1.c
+SRCS	=	test1.c					\
+			parse_arguments.c		\
+			handle_addrinfo.c		\
 
 
 OBJS	= $(SRCS:.c=.o)
