@@ -11,25 +11,6 @@ int	open_socket(t_data *a)
 	return (0);
 }
 
-void	build_icmp_packet(t_data *a, int seq)
-{
-	a->packet_header.type = 8;
-	a->packet_header.code = 0;
-	a->packet_header.checksum = 0;
-	a->packet_header.id = (uint16_t) getpid();
-	a->packet_header.seq_num = (uint16_t) seq;
-
-	a->packetsize = sizeof(t_icmp) + a->payloadsize;
-	a->packet = malloc(a->packetsize);
-	if (!a->packet)
-	{
-		printf("malloc fail\n");
-		exit(1); //todo clean exit
-	}
-	memcpy(a->packet, &a->packet_header, sizeof(t_icmp));
-	
-}
-
 int	send_requests(t_data *a)
 {
 	printf("yoe\n");

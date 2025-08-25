@@ -10,14 +10,14 @@
 # include <stdio.h>
 # include <arpa/inet.h>
 
-typedef struct s_icmp
+typedef struct s_icmp_hdr
 {
 	uint8_t		type;
 	uint8_t		code;
 	uint16_t	checksum;
 	uint16_t	id;
 	uint16_t	seq_num;
-}				t_icmp;
+}				t_icmp_hdr;
 
 typedef struct s_ping
 {
@@ -39,7 +39,7 @@ typedef struct s_data
 	struct addrinfo	hints;
 	struct addrinfo	*res;
 	int				sockfd;
-	t_icmp			packet_header;
+	t_icmp_hdr		packet_hdr;
 	char			*packet;
 	char			buf[1500];
 	struct sockaddr	sender;
