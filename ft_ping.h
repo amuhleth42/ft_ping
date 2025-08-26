@@ -11,6 +11,7 @@
 # include <arpa/inet.h>
 # include <errno.h>
 # include <stdbool.h>
+# include <netinet/ip.h>
 
 typedef struct s_icmp_hdr
 {
@@ -55,6 +56,7 @@ int		handle_getaddrinfo(t_data *a);
 
 void	build_icmp_packet(t_data *a, int seq);
 
+void	analyze_response(t_data *a);
 
 
 #endif

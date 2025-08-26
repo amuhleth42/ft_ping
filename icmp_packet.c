@@ -101,3 +101,21 @@ void	build_icmp_packet(t_data *a, int seq)
 	//print_checksum_is_valid(a->packet, a->packetsize);
 	//print_icmp_packet(a->packet, a->payloadsize);
 }
+
+void	analyze_response(t_data *a)
+{
+	struct iphdr	*ip;
+	t_icmp_hdr		*icmp;
+	size_t			iphdr_len;
+
+	ip = (struct iphdr *) a->buf;
+	iphdr_len = ip->ihl * 4;
+	icmp = (t_icmp_hdr*)(a->buf + iphdr_len);
+	printf("ICMP Response:\n");
+	printf("Type: %d\n", icmp->type);
+	printf("Code: %d\n", icmp->code);
+	printf("Checksum: %d\n", ntohs(icmp->checksum));
+	printf("ID: %d\n", ntohs(icmp->id));
+	printf("Sequence: %d\n", ntohs(icmp->seq_num));
+	//printf("Payload:\n");
+}
