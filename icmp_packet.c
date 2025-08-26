@@ -41,6 +41,29 @@ void	fill_payload(t_data *a)
 	}
 }
 
+uint16_t	get_checksum(char *buf, size_t size)
+{
+	uint16_t	checksum;
+	uint32_t	sum;
+	uint16_t	word;
+	size_t		i;
+
+	sum = 0;
+	i = 0;
+	while (i < size - 1)
+	{
+		word = (buf[i] << 8);
+		if (i + 1 < size)
+			word = word | buf[i + 1];
+		sum += word;
+		while (sum >> 16)
+			sum = (sum & 0xFFFF) + (sum >> 16);
+		i += 2;
+	}
+	checksum = ~sum;
+	return (checksum);
+}
+
 void	build_icmp_packet(t_data *a, int seq)
 {
 	a->packet_hdr.type = 8;
@@ -58,5 +81,7 @@ void	build_icmp_packet(t_data *a, int seq)
 	}
 	memcpy(a->packet, &a->packet_hdr, sizeof(t_icmp_hdr));
 	fill_payload(a);
+	a->packet_hdr.checksum = get_checksum(a->packet, a->packetsize);
+	memcpy(a->packet, &a->packet_hdr, sizeof(t_icmp_hdr));
 	//print_icmp_packet(a->packet, a->payloadsize);
 }

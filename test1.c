@@ -2,18 +2,45 @@
 
 int	open_socket(t_data *a)
 {
+	//struct timeval	tv;
+	int				status;
 	a->sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
 	if (a->sockfd < 0)
 	{
 		perror("socket");
 		return (1);
 	}
+	struct timeval	tv = {1, 0};;
+	status = setsockopt(a->sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+	if (status < 0)
+	{
+		perror("setsockopt");
+		return (1);
+	}
+
 	return (0);
+}
+
+void	receive_response(t_data *a, int seq)
+{
+	ssize_t	n;
+
+	a->sender_addrlen = sizeof(a->sender);
+	n = recvfrom(a->sockfd, a->buf, sizeof(a->buf), 0, &a->sender, &a->sender_addrlen);
+	if (n < 0)
+	{
+		if (errno == EAGAIN || errno == EWOULDBLOCK)
+			printf("Request timeout for icmp_seq=%d\n", seq);
+		else
+			perror("recvfrom");
+		return ;
+	}
+	printf("recvfrom worked!\n");
+	sleep(1);
 }
 
 int	send_requests(t_data *a)
 {
-	printf("yoe\n");
 	int		seq;
 
 	seq = 1;
@@ -21,11 +48,7 @@ int	send_requests(t_data *a)
 	{
 		build_icmp_packet(a, seq);
 		sendto(a->sockfd, a->packet, a->packetsize, 0, a->res->ai_addr, a->res->ai_addrlen);
-		printf("sendto\n");
-		a->sender_addrlen = sizeof(a->sender);
-		//recvfrom(a->sockfd, a->buf, sizeof(a->buf), 0, &a->sender, &a->sender_addrlen);
-		printf("recvfrom\n");
-		sleep(1);
+		receive_response(a, seq);
 		seq++;
 	}
 }

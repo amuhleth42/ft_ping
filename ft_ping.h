@@ -9,6 +9,7 @@
 # include <string.h>
 # include <stdio.h>
 # include <arpa/inet.h>
+# include <errno.h>
 
 typedef struct s_icmp_hdr
 {

@@ -27,8 +27,6 @@ int	handle_getaddrinfo(t_data *a)
 		fprintf(stderr, "ft_ping: %s\n", gai_strerror(status));
 		return (1);
 	}
-
 	print_addrinfo(a->res);
-
 	return (0);
 }
