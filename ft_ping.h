@@ -10,6 +10,7 @@
 # include <stdio.h>
 # include <arpa/inet.h>
 # include <errno.h>
+# include <stdbool.h>
 
 typedef struct s_icmp_hdr
 {
@@ -41,8 +42,8 @@ typedef struct s_data
 	struct addrinfo		*res;
 	int					sockfd;
 	t_icmp_hdr			packet_hdr;
-	char				*packet;
-	char				buf[1500];
+	uint8_t				*packet;
+	uint8_t				buf[1500];
 	struct sockaddr_in	sender;
 	socklen_t			sender_addrlen;
 	t_ping				pings[2048];

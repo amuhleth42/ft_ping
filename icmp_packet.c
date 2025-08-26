@@ -1,9 +1,9 @@
 #include "ft_ping.h"
 
-void	print_icmp_packet(char *packet, int payloadsize)
+void	print_icmp_packet(unsigned char *packet, int payloadsize)
 {
 	t_icmp_hdr	*icmp;
-	char		*p;
+	uint8_t		*p;
 	int			i;
 
 	icmp = (t_icmp_hdr *) packet;
@@ -28,7 +28,7 @@ void	print_icmp_packet(char *packet, int payloadsize)
 
 void	fill_payload(t_data *a)
 {
-	char	*p;
+	uint8_t	*p;
 	int		i;
 
 	p = a->packet + sizeof(t_icmp_hdr);
@@ -41,7 +41,7 @@ void	fill_payload(t_data *a)
 	}
 }
 
-uint16_t	get_checksum(char *buf, size_t size)
+uint16_t	get_checksum(uint8_t *buf, size_t size)
 {
 	uint16_t	checksum;
 	uint32_t	sum;
@@ -64,6 +64,21 @@ uint16_t	get_checksum(char *buf, size_t size)
 	return (checksum);
 }
 
+bool	checksum_is_valid(uint8_t *buf, size_t len)
+{
+    uint16_t result = get_checksum(buf, len);
+	printf("Result: %d\n", result);
+    return (result == 0);
+}
+
+void	print_checksum_is_valid(uint8_t *buf, size_t len)
+{
+	if (checksum_is_valid(buf, len))
+		printf("Checksum is valid\n");
+	else
+		printf("Checksum is NOT valid\n");
+}
+
 void	build_icmp_packet(t_data *a, int seq)
 {
 	a->packet_hdr.type = 8;
@@ -81,9 +96,8 @@ void	build_icmp_packet(t_data *a, int seq)
 	}
 	memcpy(a->packet, &a->packet_hdr, sizeof(t_icmp_hdr));
 	fill_payload(a);
-	//a->packet_hdr.checksum = get_checksum(a->packet, a->packetsize);
-	//memcpy(a->packet, &a->packet_hdr, sizeof(t_icmp_hdr));
-	char *p = a->packet;
-	*(uint16_t*)(p+2) = get_checksum(a->packet, a->packetsize);
-	print_icmp_packet(a->packet, a->payloadsize);
+	uint8_t *p = a->packet;
+	*(uint16_t*)(p+2) = htons(get_checksum(a->packet, a->packetsize));
+	//print_checksum_is_valid(a->packet, a->packetsize);
+	//print_icmp_packet(a->packet, a->payloadsize);
 }
