@@ -26,7 +26,8 @@ void	receive_response(t_data *a, int seq)
 	ssize_t	n;
 
 	a->sender_addrlen = sizeof(a->sender);
-	n = recvfrom(a->sockfd, a->buf, sizeof(a->buf), 0, &a->sender, &a->sender_addrlen);
+	n = recvfrom(a->sockfd, a->buf, sizeof(a->buf), 0, (struct sockaddr*)&a->sender, &a->sender_addrlen);
+	printf("recv n: %ld\n", n);
 	if (n < 0)
 	{
 		if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -42,12 +43,14 @@ void	receive_response(t_data *a, int seq)
 int	send_requests(t_data *a)
 {
 	int		seq;
+	ssize_t	n;
 
 	seq = 1;
 	while (1)
 	{
 		build_icmp_packet(a, seq);
-		sendto(a->sockfd, a->packet, a->packetsize, 0, a->res->ai_addr, a->res->ai_addrlen);
+		n = sendto(a->sockfd, a->packet, a->packetsize, 0, a->res->ai_addr, a->res->ai_addrlen);
+		printf("n: %lu\n", n);
 		receive_response(a, seq);
 		seq++;
 	}

@@ -18,7 +18,7 @@ typedef struct s_icmp_hdr
 	uint16_t	checksum;
 	uint16_t	id;
 	uint16_t	seq_num;
-}				t_icmp_hdr;
+}	__attribute__((packed))			t_icmp_hdr;
 
 typedef struct s_ping
 {
@@ -33,20 +33,20 @@ typedef struct s_ping
 
 typedef struct s_data	
 {
-	int 			verbose;
-	int				payloadsize;
-	size_t			packetsize;
-	char			*hostname;
-	struct addrinfo	hints;
-	struct addrinfo	*res;
-	int				sockfd;
-	t_icmp_hdr		packet_hdr;
-	char			*packet;
-	char			buf[1500];
-	struct sockaddr	sender;
-	socklen_t		sender_addrlen;
-	t_ping			pings[2048];
-}					t_data;
+	int 				verbose;
+	int					payloadsize;
+	size_t				packetsize;
+	char				*hostname;
+	struct addrinfo		hints;
+	struct addrinfo		*res;
+	int					sockfd;
+	t_icmp_hdr			packet_hdr;
+	char				*packet;
+	char				buf[1500];
+	struct sockaddr_in	sender;
+	socklen_t			sender_addrlen;
+	t_ping				pings[2048];
+}						t_data;
 
 int		parse_arguments(t_data *a, int argc, char **argv);
 
